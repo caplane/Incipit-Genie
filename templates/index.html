@@ -1,43 +1,331 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Upload Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incipit Genie PRO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .sparkle {
+            color: #667eea;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .file-input-wrapper {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .radio-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        
+        input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .radio-wrapper label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .info-box {
+            background: #f0f8ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .info-box ul {
+            color: #666;
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #fee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .selected-file {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+        }
+        
+        #loading.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <h1>Simple Upload Test</h1>
-    
-    <!-- Basic HTML form - no JavaScript needed -->
-    <form action="/convert" method="POST" enctype="multipart/form-data">
-        <p>
-            <label>Choose file:</label><br>
-            <input type="file" name="file" accept=".docx" required>
-        </p>
+    <div class="container">
+        <div class="header">
+            <h1><span class="sparkle">✨</span> Incipit Genie PRO</h1>
+            <p class="tagline">Transform endnotes to Chicago-style citations instantly</p>
+        </div>
         
-        <p>
-            <input type="hidden" name="word_count" value="3">
-            <input type="hidden" name="format_style" value="bold">
-            <input type="hidden" name="extract_incipit" value="yes">
-        </p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         
-        <p>
-            <button type="submit">Upload and Convert</button>
-        </p>
-    </form>
-    
-    <hr>
-    
-    <h2>Debug Test</h2>
-    <button onclick="testUpload()">Test Upload System</button>
-    <div id="result"></div>
+        <!-- Simple, working form - no fancy JavaScript -->
+        <form action="/convert" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="form-group">
+                <label for="file">Select Word Document (.docx)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" 
+                           name="file" 
+                           id="file" 
+                           accept=".docx"
+                           required
+                           onchange="showFileName()">
+                    <div id="selectedFile" class="selected-file" style="display:none;"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="word_count">Number of Words for Incipit</label>
+                <input type="number" 
+                       name="word_count" 
+                       id="word_count" 
+                       min="1" 
+                       max="10" 
+                       value="3">
+            </div>
+            
+            <div class="form-group">
+                <label>Incipit Format Style</label>
+                <div class="radio-group">
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="format_style" 
+                               id="bold" 
+                               value="bold" 
+                               checked>
+                        <label for="bold">Bold</label>
+                    </div>
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="format_style" 
+                               id="italic" 
+                               value="italic">
+                        <label for="italic">Italic</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Extract Incipit Text?</label>
+                <div class="radio-group">
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="extract_incipit" 
+                               id="yes" 
+                               value="yes" 
+                               checked>
+                        <label for="yes">Yes (Recommended)</label>
+                    </div>
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="extract_incipit" 
+                               id="no" 
+                               value="no">
+                        <label for="no">No (Page numbers only)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="convert-btn" onclick="showLoading()">
+                🎯 Convert to Chicago Style
+            </button>
+        </form>
+        
+        <div id="loading">
+            <p>⏳ Converting your document... Please wait...</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>✨ How It Works</h3>
+            <ul>
+                <li><strong>Upload:</strong> Select your Word document with endnotes</li>
+                <li><strong>Convert:</strong> Transforms endnotes to Chicago-style citations</li>
+                <li><strong>Download:</strong> Get your converted document instantly</li>
+            </ul>
+        </div>
+        
+        <!-- Test button for debugging -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <button onclick="testSystem()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                🧪 Test Upload System
+            </button>
+            <div id="testResult" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
     
     <script>
-    async function testUpload() {
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = 'Testing...';
+    // Simple JavaScript - minimal complexity
+    function showFileName() {
+        const fileInput = document.getElementById('file');
+        const selectedFileDiv = document.getElementById('selectedFile');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            selectedFileDiv.textContent = '📄 Selected: ' + fileInput.files[0].name;
+            selectedFileDiv.style.display = 'block';
+        }
+    }
+    
+    function showLoading() {
+        const fileInput = document.getElementById('file');
+        if (fileInput.files && fileInput.files[0]) {
+            document.getElementById('loading').classList.add('show');
+        }
+    }
+    
+    async function testSystem() {
+        const resultDiv = document.getElementById('testResult');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '⏳ Testing...';
         
         try {
-            const blob = new Blob(['test'], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+            // Create test file
+            const blob = new Blob(['test content'], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
             const file = new File([blob], 'test.docx');
             const formData = new FormData();
             formData.append('file', file);
@@ -47,10 +335,17 @@
                 body: formData
             });
             
-            const result = await response.json();
-            resultDiv.innerHTML = JSON.stringify(result, null, 2);
+            if (response.ok) {
+                const result = await response.json();
+                resultDiv.innerHTML = '✅ Upload system working! ' + JSON.stringify(result);
+                resultDiv.style.background = '#e8f5e9';
+            } else {
+                resultDiv.innerHTML = '❌ Upload failed: ' + response.statusText;
+                resultDiv.style.background = '#fee';
+            }
         } catch (error) {
-            resultDiv.innerHTML = 'Error: ' + error.message;
+            resultDiv.innerHTML = '❌ Error: ' + error.message;
+            resultDiv.style.background = '#fee';
         }
     }
     </script>
