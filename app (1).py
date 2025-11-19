@@ -106,9 +106,23 @@ class SmartIncipitExtractor:
         
         # Check if this is likely an epigraph
         is_epigraph = False
-        if para_text.strip() and len(para_text) < 500:
-            if has_italic or para_text.count('.') <= 3:
-                is_epigraph = True
+        if para_text.strip():
+            # Epigraphs are typically:
+            # 1. Short (under 500 chars)
+            # 2. Often italicized
+            # 3. Often at the beginning of chapters
+            # 4. May end with attribution
+            
+            if len(para_text) < 500:  # Short text
+                if has_italic:  # Has italic formatting
+                    is_epigraph = True
+                elif para_text.count('.') <= 3:  # Has 3 or fewer sentences
+                    # Could still be an epigraph even without italic
+                    # Check if it looks like a quote (often philosophical/literary)
+                    lower_text = para_text.lower()
+                    if any(word in lower_text for word in ['see', 'things', 'are', 'where', 'source', 'we']):
+                        # Common epigraph words
+                        is_epigraph = True
         
         # Process each endnote
         results = {}
@@ -128,38 +142,95 @@ class SmartIncipitExtractor:
         return results
     
     def extract_incipit_at_position(self, text, endnote_pos):
-        """Optimized incipit extraction"""
+        """Extract incipit text for an endnote at the given position"""
         text_before = text[:endnote_pos]
         
         if not text_before:
             return ""
         
-        # Fast path for common case - endnote after sentence
+        # Check if endnote comes right after sentence-ending punctuation
+        # This happens when note is placed at end of sentence
         if text_before and text_before[-1] in ['.', '!', '?']:
+            # Note is at end of sentence - ALWAYS extract from BEGINNING of that sentence
             sentence_text = text_before[:-1].strip()
             
-            # Find sentence start
+            # Find the start of this sentence
             sentence_start = 0
-            for marker in ['. ', '? ', '! ']:
+            for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
                 pos = sentence_text.rfind(marker)
                 if pos != -1 and pos + len(marker) > sentence_start:
                     sentence_start = pos + len(marker)
             
+            # Get the sentence
             current_sentence = sentence_text[sentence_start:].strip()
             
-            # Handle em-dash
+            # Check if sentence contains an em-dash - if so, only use text BEFORE the dash
             if '—' in current_sentence:
                 current_sentence = current_sentence.split('—')[0].strip()
+            elif '–' in current_sentence:
+                current_sentence = current_sentence.split('–')[0].strip()
             
+            # FUNDAMENTAL RULE: Extract from the BEGINNING of the sentence
             if current_sentence:
-                words = current_sentence.split()[:self.word_count]
-                if words:
-                    words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', words[-1])
-                return ' '.join(words)
+                words = current_sentence.split()
+                if len(words) >= self.word_count:
+                    selected_words = words[:self.word_count]  # ALWAYS first words
+                else:
+                    selected_words = words
+                
+                # Clean any punctuation from last word
+                if selected_words:
+                    selected_words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', selected_words[-1])
+                
+                return ' '.join(selected_words)
         
-        # Handle other cases (simplified for performance)
+        # Check if the text right before the endnote is just spaces after punctuation
+        trimmed_before = text_before.rstrip()
+        if trimmed_before and trimmed_before[-1] in ['.', '!', '?']:
+            # Same as above - ALWAYS extract from BEGINNING of sentence
+            sentence_text = trimmed_before[:-1].strip()
+            
+            # Find the start of this sentence
+            sentence_start = 0
+            for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
+                pos = sentence_text.rfind(marker)
+                if pos != -1 and pos + len(marker) > sentence_start:
+                    sentence_start = pos + len(marker)
+            
+            # Get the sentence
+            current_sentence = sentence_text[sentence_start:].strip()
+            
+            # Check if sentence contains an em-dash
+            if '—' in current_sentence:
+                current_sentence = current_sentence.split('—')[0].strip()
+            elif '–' in current_sentence:
+                current_sentence = current_sentence.split('–')[0].strip()
+            
+            # FUNDAMENTAL RULE: Extract from the BEGINNING of the sentence
+            if current_sentence:
+                words = current_sentence.split()
+                if len(words) >= self.word_count:
+                    selected_words = words[:self.word_count]  # ALWAYS first words
+                else:
+                    selected_words = words
+                
+                # Clean any punctuation from last word
+                if selected_words:
+                    selected_words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', selected_words[-1])
+                
+                return ' '.join(selected_words)
+        
+        # NORMAL HANDLING - endnote is in the middle of text
+        # Find sentence boundaries (period, question mark, etc. followed by space)
         boundaries = []
-        for marker in ['. ', '? ', '! ', ': ']:
+        
+        for marker in ['. ', '? ', '! ', ': ', '; ', '.\n', '?\n', '!\n']:
+            pos = text_before.rfind(marker)
+            if pos != -1:
+                boundaries.append(pos + len(marker))
+        
+        # Also check for quote after punctuation
+        for marker in ['. "', '. ' + LEFT_DOUBLE_QUOTE, ': "', ': ' + LEFT_DOUBLE_QUOTE]:
             pos = text_before.rfind(marker)
             if pos != -1:
                 boundaries.append(pos + len(marker))
@@ -167,12 +238,136 @@ class SmartIncipitExtractor:
         if boundaries:
             start_pos = max(boundaries)
         else:
-            start_pos = max(0, endnote_pos - 100)
+            # No clear boundary - might be an epigraph or beginning of chapter
+            # For epigraphs, take from the beginning
+            if len(text_before) < 200:  # Short text, likely epigraph
+                start_pos = 0
+            else:
+                start_pos = max(0, endnote_pos - 100)
         
+        # Get the substring we're working with
         working_text = text_before[start_pos:].strip()
+        
+        # Check if this starts with an em-dash or hyphen
+        if working_text and (working_text[0] in ['—', '–', '-'] or working_text.startswith('—')):
+            # Skip the dash and find the previous sentence
+            if boundaries and len(boundaries) > 1:
+                # Use the second-to-last boundary
+                boundaries_sorted = sorted(boundaries)
+                if len(boundaries_sorted) > 1:
+                    start_pos = boundaries_sorted[-2]
+                else:
+                    start_pos = 0
+                
+                working_text = text_before[start_pos:boundaries_sorted[-1]-2].strip()
+            else:
+                # Remove the dash and continue
+                working_text = re.sub(r'^[—–\-]+\s*', '', working_text)
+        
+        # Remove leading punctuation and quotes
         working_text = re.sub(r'^["\'"".,;:!?\s]+', '', working_text)
         
-        words = working_text.split()[:self.word_count]
+        # If working_text is empty after cleaning, extract from BEFORE the boundary
+        if not working_text and boundaries:
+            # Get text before the last boundary
+            last_boundary = max(boundaries)
+            text_before_boundary = text_before[:last_boundary-2] if last_boundary >= 2 else text_before
+            
+            # Find the previous sentence
+            prev_boundaries = []
+            for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
+                pos = text_before_boundary.rfind(marker)
+                if pos != -1:
+                    prev_boundaries.append(pos + len(marker))
+            
+            if prev_boundaries:
+                prev_start = max(prev_boundaries)
+            else:
+                prev_start = 0
+            
+            # Get the sentence that ends at our boundary
+            sentence = text_before_boundary[prev_start:].strip()
+            
+            # Check for em-dash
+            if sentence and sentence[0] == '—':
+                # Go back one more sentence
+                if prev_start > 0:
+                    text_before_prev = text_before_boundary[:prev_start-2]
+                    prev_prev_boundaries = []
+                    for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
+                        pos = text_before_prev.rfind(marker)
+                        if pos != -1:
+                            prev_prev_boundaries.append(pos + len(marker))
+                    
+                    if prev_prev_boundaries:
+                        prev_prev_start = max(prev_prev_boundaries)
+                    else:
+                        prev_prev_start = 0
+                    
+                    sentence = text_before_prev[prev_prev_start:].strip()
+            
+            # Clean em-dashes from end
+            sentence = re.sub(r'[—\-–]+$', '', sentence).strip()
+            
+            if sentence:
+                # Get the LAST N words (for this special case)
+                words = sentence.split()
+                if len(words) >= self.word_count:
+                    selected_words = words[-self.word_count:]
+                else:
+                    selected_words = words
+                
+                # Clean punctuation
+                if selected_words:
+                    selected_words[-1] = re.sub(r'[.,;:!?"\'\'"]+$', '', selected_words[-1])
+                
+                return ' '.join(selected_words)
+        
+        # If working_text is not empty, continue with normal extraction
+        if working_text:
+            # Check if we're starting in the middle of a word
+            if start_pos > 0 and start_pos < len(text_before):
+                char_before = text_before[start_pos - 1] if start_pos > 0 else ' '
+                
+                if char_before.isalnum() or char_before == "'":
+                    # Find where this partial word ends
+                    partial_end = start_pos
+                    while partial_end < len(text_before) and (text_before[partial_end].isalnum() or text_before[partial_end] == "'"):
+                        partial_end += 1
+                    
+                    # Skip past this partial word
+                    while partial_end < len(text_before) and not text_before[partial_end].isalnum():
+                        partial_end += 1
+                    
+                    if partial_end < len(text_before):
+                        working_text = text_before[partial_end:].strip()
+                    else:
+                        return ""
+            
+            # Clean up any remaining leading punctuation
+            working_text = re.sub(r'^["\'"".,;:!?\s]+', '', working_text)
+            
+            # Get specified number of words
+            words = working_text.split()[:self.word_count]
+            
+            # Clean trailing punctuation from last word
+            if words:
+                words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', words[-1])
+            
+            return ' '.join(words)
+        
+        # FALLBACK: If we still have nothing, try to get ANY words from nearby text
+        # This handles edge cases like epigraphs
+        all_text = text_before.strip()
+        
+        # For epigraphs (usually at start of chapter), take from beginning
+        if len(all_text) < 200:
+            words = all_text.split()[:self.word_count]
+        else:
+            # Otherwise take last words
+            all_text = re.sub(r'[.,;:!?"\'""—–\-]+$', '', all_text).strip()
+            words = all_text.split()[-self.word_count:] if all_text else []
+        
         if words:
             words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', words[-1])
         
