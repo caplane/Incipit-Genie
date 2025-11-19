@@ -141,14 +141,50 @@ class SmartIncipitExtractor:
             # No clear boundary - use beginning or last 100 chars
             start_pos = max(0, endnote_pos - 100)
         
-        # Extract text from start position
-        context = text_before[start_pos:].strip()
+        # CRITICAL FIX: Extract complete words only
+        # Don't extract from text_before[start_pos:] directly
+        # Instead, split the entire text_before into words and reconstruct
         
-        # Clean up leading punctuation and quotes
-        context = re.sub(r'^["\'"".,;:!?\s]+', '', context)
+        # Get the substring we're working with
+        working_text = text_before[start_pos:].strip()
+        
+        # Remove leading punctuation and quotes
+        working_text = re.sub(r'^["\'"".,;:!?\s]+', '', working_text)
+        
+        # If working_text is empty, return empty
+        if not working_text:
+            return ""
+        
+        # Split into words and check if we have a partial word at the start
+        # by checking if start_pos is in the middle of a word in the original text
+        if start_pos > 0 and start_pos < len(text_before):
+            # Look back to see if we're continuing a word
+            char_before = text_before[start_pos - 1] if start_pos > 0 else ' '
+            
+            # If the character before is alphanumeric or an apostrophe (for contractions),
+            # we're in the middle of a word
+            if char_before.isalnum() or char_before == "'":
+                # Find where this partial word ends
+                partial_end = start_pos
+                while partial_end < len(text_before) and (text_before[partial_end].isalnum() or text_before[partial_end] == "'"):
+                    partial_end += 1
+                
+                # Skip past this partial word and any following punctuation/spaces
+                while partial_end < len(text_before) and not text_before[partial_end].isalnum():
+                    partial_end += 1
+                
+                # Now extract from the beginning of the next complete word
+                if partial_end < len(text_before):
+                    working_text = text_before[partial_end:].strip()
+                else:
+                    # No complete words available
+                    return ""
+        
+        # Clean up any remaining leading punctuation
+        working_text = re.sub(r'^["\'"".,;:!?\s]+', '', working_text)
         
         # Get specified number of words
-        words = context.split()[:self.word_count]
+        words = working_text.split()[:self.word_count]
         
         # Clean trailing punctuation from last word
         if words:
