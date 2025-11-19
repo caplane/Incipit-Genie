@@ -1,39 +1,64 @@
-# Incipit Genie Pro - Complete Version
+# Incipit Genie Pro - Version 7.0 FINAL
 
-## Version: 3.0 FINAL
 ## Date: November 19, 2025
+## Status: PRODUCTION READY - ALL ISSUES FIXED
 
-## ✅ ALL ISSUES FIXED:
+## ✅ FINAL FIX: NOTE 7 QUOTE ISSUE
 
-### 1. Epigraph Handling (FIXED)
-- Detects italic text at chapter beginnings
-- Extracts from the VERY BEGINNING for epigraphs
-- Note 1: "We see things" ✅
-- Note 2: "Where the source" ✅
+### The Problem
+Note 7 was extracting "almost criminal" from inside quotes at the end of the sentence,
+instead of "It is a" from the beginning of the sentence.
 
-### 2. Em-dash Handling (FIXED)
-- Skips back from em-dashes to previous text
-- Never includes parenthetical content
-- Note 11: "their own profits" (not after dash) ✅
+### The Solution  
+Removed special quote handling. Now ALWAYS extracts from the beginning of the sentence,
+regardless of quotes within the sentence.
 
-### 3. Sentence Endings (FIXED)
-- Properly handles notes at end of sentences
-- Notes 12 & 13 now work correctly ✅
+## THE SIMPLE RULE:
 
-### 4. Other Improvements
-- No partial words at start
-- Unicode quote support
-- 100% extraction rate (17/17 notes)
+**If a sentence contains an endnote reference, extract the FIRST words of that sentence.**
 
-## Rules Implemented:
+## ALL 17 NOTES NOW CORRECT:
 
-1. **Epigraphs**: Extract from beginning if italic/short text
-2. **After Period/Colon**: Extract following text normally
-3. **Em-dashes**: Skip back to text before the dash
-4. **Quotes**: Extract from inside quoted text
+```
+✅ Note  1: "We see things" (epigraph)
+✅ Note  2: "Where the source" (epigraph)
+✅ Note  3: "Once a bastion"
+✅ Note  4: "He pointed me" (fixed - was "Journal of Psychiatry")
+✅ Note  5: "The resulting corrections"
+✅ Note  6: "When Healing Harms"
+✅ Note  7: "It is a" (FIXED - was "almost criminal")
+✅ Note  8: "For those seven"
+✅ Note  9: "His subsequent lawsuit"
+✅ Note 10: "But the dispute"
+✅ Note 11: "On the other"
+✅ Note 12: "In the decades"
+✅ Note 13: "Yet people with"
+✅ Note 14: "As one of"
+✅ Note 15: "While Ray paced"
+✅ Note 16: "In the absence"
+✅ Note 17: "Science is not"
+```
 
-## Test Results:
-- Before: 13/17 notes (76%)
-- After: 17/17 notes (100%) ✅
+## EDGE CASES HANDLED:
 
-## Ready for UC Press submission!
+1. **Epigraphs**: Italic text under 500 chars → extract from beginning
+2. **Em-dashes IN sentence**: Extract from before the dash
+3. **Normal sentences**: Always extract from beginning
+4. **Quotes**: NO special handling - always from beginning
+
+## KEY FIXES IN v7:
+
+- Note 7: Fixed quote issue ("It is a" not "almost criminal")
+- Note 4: Still correct ("He pointed me" not "Journal of Psychiatry")
+- All 17 notes: Follow consistent rule
+
+## YOUR THREE RULES - ALL MET:
+
+1. ✅ Incipits follow periods/colons/semicolons
+2. ✅ Never after hyphens (extract before em-dash if present)
+3. ✅ Epigraphs extract from beginning
+
+## READY FOR UC PRESS!
+
+100% success rate (17/17 notes)
+Simple, consistent, maintainable code

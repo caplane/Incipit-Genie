@@ -139,30 +139,11 @@ class SmartIncipitExtractor:
         if not text_before:
             return ""
         
-        # Check if endnote comes after a closing quote (smart or regular)
-        last_char = text_before[-1] if text_before else ''
-        
-        if last_char in [RIGHT_DOUBLE_QUOTE, '"', RIGHT_SINGLE_QUOTE, "'"]:
-            # Find the matching opening quote
-            quote_end = len(text_before) - 1
-            
-            # Search backwards for opening quote
-            for i in range(quote_end - 1, max(0, quote_end - 1000), -1):
-                char = text[i]
-                
-                # Check for opening quotes
-                if char in [LEFT_DOUBLE_QUOTE, '"', LEFT_SINGLE_QUOTE, "'"]:
-                    # Verify it's an opening quote (preceded by space, punctuation, or start)
-                    if i == 0 or text[i-1] in [' ', ',', ':', '.', '!', '?', ';', '(', '—', '-', '\n', '\t']:
-                        # Extract from inside the quote
-                        quoted_text = text[i+1:quote_end].strip()
-                        words = quoted_text.split()[:self.word_count]
-                        return ' '.join(words)
         
         # Check if endnote comes right after sentence-ending punctuation
         # This happens when note is placed at end of sentence
         if text_before and text_before[-1] in ['.', '!', '?']:
-            # Note is right after sentence ending - extract from END of that sentence
+            # Note is at end of sentence - ALWAYS extract from BEGINNING of that sentence
             # Remove the trailing punctuation
             sentence_text = text_before[:-1].strip()
             
@@ -184,35 +165,15 @@ class SmartIncipitExtractor:
                 # Also check for en-dash
                 current_sentence = current_sentence.split('–')[0].strip()
             
-            # If the sentence is now empty or too short, go back to previous sentence
-            if not current_sentence or len(current_sentence.split()) < self.word_count:
-                if sentence_start > 0:
-                    # Get the previous sentence
-                    prev_text = sentence_text[:sentence_start-2] if sentence_start >= 2 else sentence_text
-                    
-                    prev_start = 0
-                    for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
-                        pos = prev_text.rfind(marker)
-                        if pos != -1 and pos + len(marker) > prev_start:
-                            prev_start = pos + len(marker)
-                    
-                    current_sentence = prev_text[prev_start:].strip()
-                    
-                    # Again check for dashes
-                    if '—' in current_sentence:
-                        current_sentence = current_sentence.split('—')[0].strip()
-                    elif '–' in current_sentence:
-                        current_sentence = current_sentence.split('–')[0].strip()
-            
+            # FUNDAMENTAL RULE: Extract from the BEGINNING of the sentence
             if current_sentence:
-                # Get the LAST N words from this sentence
                 words = current_sentence.split()
                 if len(words) >= self.word_count:
-                    selected_words = words[-self.word_count:]
+                    selected_words = words[:self.word_count]  # ALWAYS first words
                 else:
                     selected_words = words
                 
-                # Clean any remaining punctuation
+                # Clean any punctuation from last word
                 if selected_words:
                     selected_words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', selected_words[-1])
                 
@@ -222,7 +183,7 @@ class SmartIncipitExtractor:
         # (e.g., ". " before the note)
         trimmed_before = text_before.rstrip()
         if trimmed_before and trimmed_before[-1] in ['.', '!', '?']:
-            # Same as above - extract from end of sentence
+            # Same as above - ALWAYS extract from BEGINNING of sentence
             sentence_text = trimmed_before[:-1].strip()
             
             # Find the start of this sentence
@@ -241,34 +202,15 @@ class SmartIncipitExtractor:
             elif '–' in current_sentence:
                 current_sentence = current_sentence.split('–')[0].strip()
             
-            # If the sentence is now empty or too short, go back to previous sentence
-            if not current_sentence or len(current_sentence.split()) < self.word_count:
-                if sentence_start > 0:
-                    prev_text = sentence_text[:sentence_start-2] if sentence_start >= 2 else sentence_text
-                    
-                    prev_start = 0
-                    for marker in ['. ', '? ', '! ', '.\n', '?\n', '!\n']:
-                        pos = prev_text.rfind(marker)
-                        if pos != -1 and pos + len(marker) > prev_start:
-                            prev_start = pos + len(marker)
-                    
-                    current_sentence = prev_text[prev_start:].strip()
-                    
-                    # Again check for dashes
-                    if '—' in current_sentence:
-                        current_sentence = current_sentence.split('—')[0].strip()
-                    elif '–' in current_sentence:
-                        current_sentence = current_sentence.split('–')[0].strip()
-            
+            # FUNDAMENTAL RULE: Extract from the BEGINNING of the sentence
             if current_sentence:
-                # Get the LAST N words from this sentence
                 words = current_sentence.split()
                 if len(words) >= self.word_count:
-                    selected_words = words[-self.word_count:]
+                    selected_words = words[:self.word_count]  # ALWAYS first words
                 else:
                     selected_words = words
                 
-                # Clean any remaining punctuation
+                # Clean any punctuation from last word
                 if selected_words:
                     selected_words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', selected_words[-1])
                 
@@ -375,7 +317,7 @@ class SmartIncipitExtractor:
                 
                 # Clean punctuation
                 if selected_words:
-                    selected_words[-1] = re.sub(r'[.,;:!?"\'"]+$', '', selected_words[-1])
+                    selected_words[-1] = re.sub(r'[.,;:!?"\'\'"]+$', '', selected_words[-1])
                 
                 return ' '.join(selected_words)
         
