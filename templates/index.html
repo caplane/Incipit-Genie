@@ -4,716 +4,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incipit Genie PRO - Professional Citation Converter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Incipit Genie PRO</title>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --error: #ef4444;
-            --dark: #1e293b;
-            --gray: #64748b;
-            --light-gray: #f1f5f9;
-            --white: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-
-        /* Animated background */
-        .bg-animation {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            opacity: 0.3;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: drift 20s linear infinite;
-        }
-
-        @keyframes drift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        /* Main container */
+        
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
         }
-
-        /* Header */
+        
         .header {
             text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInDown 0.8s ease-out;
+            margin-bottom: 30px;
         }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
+        
         h1 {
-            color: var(--white);
+            color: #333;
             font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
         }
-
+        
+        .sparkle {
+            color: #667eea;
+        }
+        
         .tagline {
-            color: rgba(255, 255, 255, 0.9);
+            color: #666;
             font-size: 1.1rem;
-            font-weight: 400;
         }
-
-        /* Main card */
-        .card {
-            background: var(--white);
-            border-radius: 24px;
-            padding: 2.5rem;
-            box-shadow: var(--shadow-xl), 0 0 100px rgba(99, 102, 241, 0.1);
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Form groups */
+        
         .form-group {
-            margin-bottom: 2rem;
+            margin-bottom: 25px;
         }
-
+        
         label {
             display: block;
-            color: var(--dark);
+            color: #555;
             font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            letter-spacing: -0.01em;
+            margin-bottom: 8px;
         }
-
-        /* File upload area */
-        .upload-area {
-            border: 2px dashed var(--primary-light);
-            border-radius: 16px;
-            padding: 2rem;
+        
+        .file-input-wrapper {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
             text-align: center;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.has-file {
-            border-style: solid;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-color: var(--success);
-        }
-
-        .upload-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1rem;
-            background: var(--white);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: var(--shadow-md);
-        }
-
-        .upload-text {
-            color: var(--gray);
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-hint {
-            font-size: 0.875rem;
-            color: var(--gray);
-            opacity: 0.8;
-        }
-
-        .file-name {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: var(--white);
-            border-radius: 8px;
-            color: var(--success);
-            font-weight: 600;
-            display: none;
-        }
-
-        .file-name.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Input fields */
+        
         input[type="file"] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        input[type="number"] {
             width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            padding: 10px;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            font-family: inherit;
         }
-
-        input[type="number"]:focus {
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        select:focus, input[type="number"]:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: #667eea;
         }
-
-        /* Radio buttons */
+        
         .radio-group {
             display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
         }
-
-        .radio-option {
-            position: relative;
-            flex: 1;
-            min-width: 140px;
+        
+        .radio-wrapper {
+            display: flex;
+            align-items: center;
         }
-
-        .radio-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .radio-label {
-            display: block;
-            padding: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            text-align: center;
+        
+        input[type="radio"] {
+            margin-right: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
         }
-
-        .radio-option input[type="radio"]:checked + .radio-label {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            color: var(--primary);
+        
+        .radio-wrapper label {
+            margin-bottom: 0;
+            cursor: pointer;
         }
-
-        .radio-label:hover {
-            border-color: var(--primary-light);
-        }
-
-        /* Submit button */
-        .submit-btn {
+        
+        .convert-btn {
             width: 100%;
-            padding: 1.125rem 2rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--white);
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            margin-top: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .submit-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .submit-btn:hover {
+        
+        .convert-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.7;
+        
+        .convert-btn:disabled {
+            opacity: 0.6;
             cursor: not-allowed;
         }
-
-        /* Loading state */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
+        
+        .info-box {
+            background: #f0f8ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
         }
-
-        .loading-overlay.show {
-            display: flex;
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
-
-        .loading-card {
-            background: var(--white);
-            padding: 2rem 3rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow-xl);
-            text-align: center;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--light-gray);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--dark);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .loading-subtext {
-            color: var(--gray);
-            font-size: 0.875rem;
-        }
-
-        /* Info section */
-        .info-section {
-            margin-top: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 16px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .info-title {
-            color: var(--dark);
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .info-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: start;
-            gap: 0.75rem;
-        }
-
-        .info-icon {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
-            background: var(--primary);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            margin-top: 2px;
-        }
-
-        .info-content {
-            flex: 1;
-            color: var(--gray);
+        
+        .info-box ul {
+            color: #666;
+            margin-left: 20px;
             line-height: 1.6;
         }
-
-        .info-content strong {
-            color: var(--dark);
-        }
-
-        /* Alerts */
+        
         .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideDown 0.3s ease-out;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #fee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
         }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
+        
         .alert-success {
-            background: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
         }
-
-        .alert-icon {
-            flex-shrink: 0;
-            font-size: 1.25rem;
+        
+        .selected-file {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            color: #2e7d32;
         }
-
-        /* Responsive */
-        @media (max-width: 640px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .card {
-                padding: 1.5rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .radio-group {
-                flex-direction: column;
-            }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+        }
+        
+        #loading.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- Animated background -->
-    <div class="bg-animation"></div>
-
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <div class="logo">
-                <div class="logo-icon">✨</div>
-            </div>
-            <h1>Incipit Genie PRO</h1>
-            <p class="tagline">Transform endnotes to Chicago-style citations with precision</p>
+            <h1><span class="sparkle">✨</span> Incipit Genie PRO</h1>
+            <p class="tagline">Transform endnotes to Chicago-style citations instantly</p>
         </div>
-
-        <!-- Main card -->
-        <div class="card">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span class="alert-icon">
-                                {% if category == 'error' %}⚠️{% else %}✅{% endif %}
-                            </span>
-                            <span>{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <form action="/convert" method="POST" enctype="multipart/form-data" id="convertForm">
-                <!-- File upload -->
-                <div class="form-group">
-                    <label for="file">Document Upload</label>
-                    <div class="upload-area" id="uploadArea">
-                        <input type="file" name="file" id="file" accept=".docx" required>
-                        <div class="upload-icon">📄</div>
-                        <div class="upload-text">Drop your .docx file here or click to browse</div>
-                        <div class="upload-hint">Maximum file size: 100MB</div>
-                        <div class="file-name" id="fileName"></div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
                     </div>
-                </div>
-
-                <!-- Word count -->
-                <div class="form-group">
-                    <label for="word_count">Incipit Length (words)</label>
-                    <input type="number" name="word_count" id="word_count" min="1" max="10" value="3">
-                </div>
-
-                <!-- Format style -->
-                <div class="form-group">
-                    <label>Format Style</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" name="format_style" id="bold" value="bold" checked>
-                            <label for="bold" class="radio-label">Bold</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" name="format_style" id="italic" value="italic">
-                            <label for="italic" class="radio-label">Italic</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Extract incipit -->
-                <div class="form-group">
-                    <label>Extract Incipit Text</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" name="extract_incipit" id="yes" value="yes" checked>
-                            <label for="yes" class="radio-label">Yes (Recommended)</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" name="extract_incipit" id="no" value="no">
-                            <label for="no" class="radio-label">Page Numbers Only</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Submit button -->
-                <button type="submit" class="submit-btn">
-                    Convert to Chicago Style Citations
-                </button>
-            </form>
-
-            <!-- Info section -->
-            <div class="info-section">
-                <h3 class="info-title">
-                    💡 How It Works
-                </h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-icon">1</div>
-                        <div class="info-content">
-                            <strong>Upload:</strong> Select your Word document containing endnotes
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon">2</div>
-                        <div class="info-content">
-                            <strong>Process:</strong> Intelligently extracts incipit text from each citation point
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon">3</div>
-                        <div class="info-content">
-                            <strong>Download:</strong> Receive your document with properly formatted Chicago-style notes
-                        </div>
-                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Simple, working form - no fancy JavaScript -->
+        <form action="/convert" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="form-group">
+                <label for="file">Select Word Document (.docx)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" 
+                           name="file" 
+                           id="file" 
+                           accept=".docx"
+                           required
+                           onchange="showFileName()">
+                    <div id="selectedFile" class="selected-file" style="display:none;"></div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Loading overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-card">
-            <div class="spinner"></div>
-            <div class="loading-text">Converting your document...</div>
-            <div class="loading-subtext">This may take a moment for large files</div>
-        </div>
-    </div>
-
-    <script>
-        // File upload handling
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('file');
-        const fileName = document.getElementById('fileName');
-        const form = document.getElementById('convertForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        // Click to upload
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // File selection
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                uploadArea.classList.add('has-file');
-                fileName.textContent = `📄 ${file.name}`;
-                fileName.classList.add('show');
-            }
-        });
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.transform = 'scale(1.02)';
-        });
-
-        uploadArea.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            uploadArea.style.transform = 'scale(1)';
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.transform = 'scale(1)';
             
-            const files = e.dataTransfer.files;
-            if (files.length && files[0].name.endsWith('.docx')) {
-                fileInput.files = files;
-                uploadArea.classList.add('has-file');
-                fileName.textContent = `📄 ${files[0].name}`;
-                fileName.classList.add('show');
+            <div class="form-group">
+                <label for="word_count">Number of Words for Incipit</label>
+                <input type="number" 
+                       name="word_count" 
+                       id="word_count" 
+                       min="1" 
+                       max="10" 
+                       value="3">
+            </div>
+            
+            <div class="form-group">
+                <label>Incipit Format Style</label>
+                <div class="radio-group">
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="format_style" 
+                               id="bold" 
+                               value="bold" 
+                               checked>
+                        <label for="bold">Bold</label>
+                    </div>
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="format_style" 
+                               id="italic" 
+                               value="italic">
+                        <label for="italic">Italic</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Extract Incipit Text?</label>
+                <div class="radio-group">
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="extract_incipit" 
+                               id="yes" 
+                               value="yes" 
+                               checked>
+                        <label for="yes">Yes (Recommended)</label>
+                    </div>
+                    <div class="radio-wrapper">
+                        <input type="radio" 
+                               name="extract_incipit" 
+                               id="no" 
+                               value="no">
+                        <label for="no">No (Page numbers only)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="convert-btn" onclick="showLoading()">
+                🎯 Convert to Chicago Style
+            </button>
+        </form>
+        
+        <div id="loading">
+            <p>⏳ Converting your document... Please wait...</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>✨ How It Works</h3>
+            <ul>
+                <li><strong>Upload:</strong> Select your Word document with endnotes</li>
+                <li><strong>Convert:</strong> Transforms endnotes to Chicago-style citations</li>
+                <li><strong>Download:</strong> Get your converted document instantly</li>
+            </ul>
+        </div>
+        
+        <!-- Test button for debugging -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <button onclick="testSystem()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                🧪 Test Upload System
+            </button>
+            <div id="testResult" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+    // Simple JavaScript - minimal complexity
+    function showFileName() {
+        const fileInput = document.getElementById('file');
+        const selectedFileDiv = document.getElementById('selectedFile');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            selectedFileDiv.textContent = '📄 Selected: ' + fileInput.files[0].name;
+            selectedFileDiv.style.display = 'block';
+        }
+    }
+    
+    function showLoading() {
+        const fileInput = document.getElementById('file');
+        if (fileInput.files && fileInput.files[0]) {
+            document.getElementById('loading').classList.add('show');
+        }
+    }
+    
+    async function testSystem() {
+        const resultDiv = document.getElementById('testResult');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '⏳ Testing...';
+        
+        try {
+            // Create test file
+            const blob = new Blob(['test content'], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+            const file = new File([blob], 'test.docx');
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await fetch('/test-upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                resultDiv.innerHTML = '✅ Upload system working! ' + JSON.stringify(result);
+                resultDiv.style.background = '#e8f5e9';
+            } else {
+                resultDiv.innerHTML = '❌ Upload failed: ' + response.statusText;
+                resultDiv.style.background = '#fee';
             }
-        });
-
-        // Form submission
-        form.addEventListener('submit', (e) => {
-            if (fileInput.files && fileInput.files[0]) {
-                loadingOverlay.classList.add('show');
-            }
-        });
+        } catch (error) {
+            resultDiv.innerHTML = '❌ Error: ' + error.message;
+            resultDiv.style.background = '#fee';
+        }
+    }
     </script>
 </body>
 </html>
