@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Incipit Genie Pro - Optimized for Large Files
+Incipit Genie Pro - STABLE VERSION
 Handles documents with hundreds of endnotes efficiently
 Created by Eric Caplan (caplane@gmail.com)
 """
